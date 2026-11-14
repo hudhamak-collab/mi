@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #ffffff;
+            overflow: hidden;
+            position: relative;
+        }
+        .search-container {
+            text-align: center;
+            width: 90%;
+            max-width: 600px;
+            z-index: 10;
+            transition: opacity 0.6s ease;
+        }
+        .google-logo {
+            font-size: 6rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            user-select: none;
+        }
+        .google-logo span:nth-child(1) { color: #4285F4; }
+        .google-logo span:nth-child(2) { color: #EA4335; }
+        .google-logo span:nth-child(3) { color: #FBBC05; }
+        .google-logo span:nth-child(4) { color: #4285F4; }
+        .google-logo span:nth-child(5) { color: #34A853; }
+        .google-logo span:nth-child(6) { color: #EA4335; }
+        
+        .prompt-text {
+            font-size: 1.1rem;
+            color: #4d5156;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        .search-box {
+            width: 100%;
+            padding: 12px 20px;
+            font-size: 16px;
+            border: 1px solid #dfe1e5;
+            border-radius: 24px;
+            outline: none;
+            box-sizing: border-box;
+        }
+        .search-box:focus {
+            box-shadow: 0 1px 6px rgba(32,33,36,0.28);
+            border-color: rgba(223,225,229,0);
+        }
+        .btn-container {
+            margin-top: 20px;
+        }
+        .search-btn {
+            background-color: #f8f9fa;
+            border: 1px solid #f8f9fa;
+            color: #3c4043;
+            padding: 10px 16px;
+            font-size: 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            outline: none;
+        }
+        .search-btn:hover {
+            border: 1px solid #dadce0;
+            color: #202124;
+        }
+        .error-message {
+            font-size: 0.95rem;
+            margin-top: 15px;
+            min-height: 20px;
+            font-weight: bold;
+            line-height: 1.4;
+        }
+
+        /* Combined Balloon & Heart Jump Particle Animation Style Rules */
+        .celebration-item {
+            position: absolute;
+            bottom: -80px;
+            z-index: 5;
+            cursor: pointer;
+            animation: jumpAndFloatUp 4.2s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+        }
+
+        .balloon-style {
+            width: 50px;
+            height: 65px;
+            border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+        }
+        .balloon-style:before {
+            content: "";
+            position: absolute;
+            bottom: -6px;
+            left: 22px;
+            width: 0;
+            height: 0;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-top: 6px solid currentColor;
+        }
+
+        .heart-style {
+            width: 36px;
+            height: 36px;
+            transform: rotate(-45deg);
+            background-color: #ff3366;
+        }
+        .heart-style:before, .heart-style:after {
+            content: "";
+            position: absolute;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: inherit;
+        }
+        .heart-style:before { top: -18px; left: 0; }
+        .heart-style:after { top: 0; left: 18px; }
+
+        @keyframes jumpAndFloatUp {
+            0% {
+                bottom: -80px;
+                transform: translateY(0) scale(0.4) rotate(0deg);
+                opacity: 1;
+            }
+            15% {
+                /* Screen layout entry jump burst step configuration */
+                bottom: 20vh;
+                transform: translateY(-50px) scale(1.1) rotate(10deg);
+            }
+            30% {
+                bottom: 35vh;
+                transform: translateY(0) scale(1) rotate(-10deg);
+            }
+            100% {
+                bottom: 120vh;
+                transform: translateY(-300px) scale(1.3) rotate(20deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="search-container" id="mainConsole">
+        <div class="google-logo">
+            <span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span>
+        </div>
+        
+        <!-- Target Instruction Text Content -->
+        <div class="prompt-text">Type your Favourite one in the world</div>
+        
+        <input type="text" id="searchInput" class="search-box" autocomplete="off" placeholder="Search Google or type a URL">
+        
+        <div class="error-message" id="errorBox"></div>
+        
+        <div class="btn-container">
+            <button class="search-btn" onclick="checkSearch()">Google Search</button>
+        </div>
+    </div>
+
+    <script>
+        function playPopEffectSound() {
+            try {
+                var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                var oscillator = audioCtx.createOscillator();
+                var gainNode = audioCtx.createGain();
+                
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(450, audioCtx.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(900, audioCtx.currentTime + 0.07);
+                
+                gainNode.gain.setValueAtTime(0.25, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.07);
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 0.07);
+            } catch(e) { console.log(e); }
+        }
+
+        function triggerMassCelebration() {
+            var colors = ['#ff3366', '#ff66b2', '#00e676', '#00b0ff', '#ffea00', '#ff6d00', '#d500f9'];
+            var totalCount = 50; // Total mixed variables
+            
+            for (let i = 0; i < totalCount; i++) {
+                setTimeout(function() {
+                    var element = document.createElement('div');
+                    element.className = 'celebration-item';
+                    
+                    var randomColor = colors[Math.floor(Math.random() * colors.length)];
+                    var randomLeft = Math.floor(Math.random() * 94);
+                    var randomDelay = Math.random() * 1.6;
+                    
+                    element.style.left = randomLeft + '%';
+                    element.style.animationDelay = randomDelay + 's';
+                    element.style.color = randomColor;
+
+                    // Alternating custom shapes (Heart & Balloon mixed burst setup)
+                    if (i % 2 === 0) {
+                        element.classList.add('balloon-style');
+                        element.style.backgroundColor = randomColor;
+                    } else {
+                        element.classList.add('heart-style');
+                        element.style.backgroundColor = randomColor;
+                    }
+                    
+                    element.addEventListener('click', function() {
+                        playPopEffectSound();
+                        element.remove();
+                    });
+
+                    document.body.appendChild(element);
+                }, i * 45);
+            }
+        }
+
+        function checkSearch() {
+            var query = document.getElementById("searchInput").value.trim().toLowerCase();
+            var errorBox = document.getElementById("errorBox");
+            var mainConsole = document.getElementById("mainConsole");
+            
+            // Password key target
+            var correctKeywords = ["My princess"];
+            
+            // 🔗 REAL LINK OVERRIDE ROUTE - Paste un real DigiCakey URL inge
+            var targetUrl = "https://app.jotform.com/263152294381457"; 
+
+            if (query === "") {
+                errorBox.innerHTML = "Please type something to search!";
+                errorBox.style.color = "#d93025";
+            } else if (correctKeywords.includes(query)) {
+                errorBox.innerHTML = "Access Granted! Unlocking our universe... 💖🎉";
+                errorBox.style.color = "#ff3366";
+                
+                triggerMassCelebration();
+                
+                setTimeout(function() {
+                    mainConsole.style.opacity = '0';
+                    setTimeout(function() {
+                        window.location.href = targetUrl;
+                    }, 600);
+                }, 3600);
+            } else {
+                var mistakes = [
+                    "Adi vaanguva Naaye , Venune pannadha 😡🔪",
+                    "Thodapakatta piyyum, idhu dha unakku romba pudikuma?? 🤬🧹"
+                ];
+                var randomMistake = mistakes[Math.floor(Math.random() * mistakes.length)];
+                errorBox.innerHTML = randomMistake;
+                errorBox.style.color = "#d93025";
+            }
+        }
+
+        document.getElementById("searchInput").addEventListener("keyup", function(event) {
+            if (event.key === "Enter") {
+                checkSearch();
+            }
+        });
+    </script>
+</body>
+</html>
